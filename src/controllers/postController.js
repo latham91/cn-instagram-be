@@ -42,10 +42,31 @@ export const createPost = async (req, res) => {
 
 export const getPosts = async (req, res) => {
     try {
-        const posts = await Post.find({}, "-__v")
-            .populate("userId", "-password -__v")
-            .populate("likes", "-__v")
-            .populate("comments", "-__v");
+        // const posts = await Post.find({}, "-__v")
+        //     .populate("userId", "-password -__v")
+        //     .populate("likes", "-__v")
+        //     .populate("comments", "-__v");
+
+        const posts = await Post.find()
+            .populate([
+                {
+                    path: "userId",
+                    select: "-password -__v -comments -likes -posts",
+                },
+                {
+                    path: "likes",
+                    select: "-__v",
+                },
+                {
+                    path: "comments",
+                    select: "-__v",
+                    populate: {
+                        path: "userId",
+                        select: "username",
+                    },
+                },
+            ])
+            .sort({ createdAt: -1 });
 
         if (posts.length === 0) {
             return res.status(404).json({ success: false, source: "getPosts", message: "No posts found" });
