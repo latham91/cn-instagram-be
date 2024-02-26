@@ -1,7 +1,5 @@
 import Post from "../models/postModel.js";
 import User from "../models/userModel.js";
-import Like from "../models/likeModel.js";
-import Comment from "../models/commentModel.js";
 import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({
