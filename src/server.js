@@ -6,6 +6,9 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import dbConnect from "./db/connection.js";
 
+// Route imports
+import userRoutes from "./routes/userRoutes.js";
+
 const port = process.env.PORT || 5001;
 
 // Load environment variables from .env file
@@ -30,6 +33,8 @@ app.get("/api/health", (req, res) => {
         return res.status(500).json({ message: "API is unhealthy", error: error.message });
     }
 });
+
+app.use("/api/users", userRoutes);
 
 // Start server
 app.listen(port, () => {

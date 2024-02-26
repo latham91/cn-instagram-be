@@ -1,10 +1,10 @@
 import dotenv from "dotenv";
-import User from "../models/userModel";
+import User from "../models/userModel.js";
 import jwt from "jsonwebtoken";
 
 dotenv.config();
 
-export const createUser = async (req, res) => {
+export const registerUser = async (req, res) => {
     try {
         const { username, email, password } = req.body;
         const user = await User.create({ username, email, password });
@@ -36,5 +36,15 @@ export const loginUser = async (req, res) => {
         return res
             .status(500)
             .json({ success: false, message: "Server error", source: "loginUser", error: error.message });
+    }
+};
+
+export const verifyUser = async (req, res) => {
+    try {
+        return res.status(200).json({ success: true, user: req.user });
+    } catch (error) {
+        return res
+            .status(500)
+            .json({ success: false, message: "Server error", source: "verifyUser", error: error.message });
     }
 };
