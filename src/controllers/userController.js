@@ -1,4 +1,8 @@
+import dotenv from "dotenv";
 import User from "../models/userModel";
+import jwt from "jsonwebtoken";
+
+dotenv.config();
 
 export const createUser = async (req, res) => {
     try {
@@ -10,5 +14,27 @@ export const createUser = async (req, res) => {
         return res
             .status(500)
             .json({ success: false, message: "Server error", source: "createUser", error: error.message });
+    }
+};
+
+export const loginUser = async (req, res) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ success: false, message: "Invalid credentials" });
+        }
+
+        const { username, email, password } = req.user;
+
+        const token = jwt.sign({ id: req.user._id, username, email, password }, process.env.JWT_SECRET, {
+            expiresIn: process.env.JWT_EXPIRE,
+        });
+
+        res.cookie("insta_auth", token, { httpOnly: true, maxAge: 900000 });
+
+        return res.status(200).json({ success: true, message: `${username} logged in`, user: req.user, token });
+    } catch (error) {
+        return res
+            .status(500)
+            .json({ success: false, message: "Server error", source: "loginUser", error: error.message });
     }
 };
