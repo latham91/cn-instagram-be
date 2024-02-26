@@ -7,6 +7,13 @@ dotenv.config();
 export const registerUser = async (req, res) => {
     try {
         const { username, email, password } = req.body;
+
+        const userExists = await User.findOne({ email });
+
+        if (userExists) {
+            return res.status(400).json({ success: false, message: "Account already exists" });
+        }
+
         const user = await User.create({ username, email, password });
 
         return res.status(201).json({ success: true, message: "User created", user });
@@ -23,9 +30,9 @@ export const loginUser = async (req, res) => {
             return res.status(401).json({ success: false, message: "Invalid credentials" });
         }
 
-        const { username, email, password } = req.user;
+        const { id, username, email, password } = req.user;
 
-        const token = jwt.sign({ id: req.user._id, username, email, password }, process.env.JWT_SECRET, {
+        const token = jwt.sign({ id: id, username, email, password }, process.env.JWT_SECRET, {
             expiresIn: process.env.JWT_EXPIRE,
         });
 

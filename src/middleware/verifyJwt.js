@@ -2,10 +2,11 @@ import jwt from "jsonwebtoken";
 
 const verifyJwt = (req, res, next) => {
     const token = req.cookies.insta_auth;
+    console.log(token);
 
     if (!token) {
         res.clearCookie("insta_auth");
-        return res.status(401).json({ success: false, message: "Unauthorized" });
+        return res.status(401).json({ success: false, source: "verifyJwt", message: "Unauthorized" });
     }
 
     try {
