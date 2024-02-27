@@ -42,11 +42,6 @@ export const createPost = async (req, res) => {
 
 export const getPosts = async (req, res) => {
     try {
-        // const posts = await Post.find({}, "-__v")
-        //     .populate("userId", "-password -__v")
-        //     .populate("likes", "-__v")
-        //     .populate("comments", "-__v");
-
         const posts = await Post.find()
             .populate([
                 {
@@ -75,5 +70,86 @@ export const getPosts = async (req, res) => {
         return res.status(200).json({ success: true, source: "getPosts", posts });
     } catch (error) {
         return res.status(500).json({ success: false, source: "getPosts", message: "Internal server error" });
+    }
+};
+
+export const deletePost = async (req, res) => {
+    try {
+        const postAuthor = req.body.userId;
+        const { postId } = req.params;
+
+        if (postAuthor !== req.user.id) {
+            return res.status(403).json({ success: false, source: "deletePost", message: "You are not authorized" });
+        }
+
+        const deletedPost = await Post.findByIdAndDelete({ _id: postId });
+
+        if (!deletedPost) {
+            return res.status(404).json({ success: false, source: "deletePost", message: "Post not found" });
+        }
+
+        // Comments for my sanity
+        // Delete image from cloudinary
+        const imageId = deletedPost.image.split("/").pop().split(".")[0];
+        const deleteCloudinaryImage = await cloudinary.uploader.destroy(imageId);
+
+        if (deleteCloudinaryImage.result !== "ok") {
+            return res
+                .status(500)
+                .json({ success: false, source: "deletePost", message: "Unable to delete image from cloudinary" });
+        }
+
+        // Delete post from user's posts
+        const deletePostFromUser = await User.findByIdAndUpdate({ _id: req.user.id }, { $pull: { posts: postId } });
+
+        if (!deletePostFromUser) {
+            return res
+                .status(500)
+                .json({ success: false, source: "deletePost", message: "Unable to delete post from user's posts" });
+        }
+
+        // Delete likes and comments associated with the post
+        await Promise.all([
+            Post.updateOne({ _id: postId }, { $pull: { likes: { postId } } }),
+            Post.updateOne({ _id: postId }, { $pull: { comments: { postId } } }),
+            User.updateMany({}, { $pull: { likes: { postId } } }),
+        ]);
+
+        return res.status(200).json({ success: true, source: "deletePost", message: "Post deleted successfully" });
+    } catch (error) {
+        return res.status(500).json({ success: false, source: "deletePost", message: "Internal server error" });
+    }
+};
+
+export const getUserPosts = async (req, res) => {
+    try {
+        const { username } = req.params;
+
+        const userPosts = await User.findOne({ username }).populate([
+            {
+                path: "posts",
+                select: "-__v",
+                populate: {
+                    path: "userId",
+                    select: "username createdAt",
+                },
+            },
+            {
+                path: "likes",
+                select: "-__v",
+            },
+            {
+                path: "comments",
+                select: "-__v",
+            },
+        ]);
+
+        if (!userPosts) {
+            return res.status(404).json({ success: false, source: "getUserPosts", message: "User not found" });
+        }
+
+        return res.status(200).json({ success: true, source: "getUserPosts", userPosts });
+    } catch (error) {
+        return res.status(500).json({ success: false, source: "getUserPosts", message: "Internal server error" });
     }
 };
