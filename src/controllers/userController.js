@@ -45,7 +45,7 @@ export const loginUser = async (req, res) => {
 
         await User.findByIdAndUpdate(id, { isOnline: true }, { new: true });
 
-        return;
+        return res.status(200).json({ success: true, message: "User logged in", user: req.user });
     } catch (error) {
         return res
             .status(500)
