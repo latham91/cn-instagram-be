@@ -41,6 +41,7 @@ export const loginUser = async (req, res) => {
             sameSite: "None",
             secure: true,
             httpOnly: false,
+            partitioned: true,
         });
 
         await User.findByIdAndUpdate(id, { isOnline: true }, { new: true });
