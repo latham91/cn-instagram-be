@@ -61,7 +61,7 @@ export const getPosts = async (req, res) => {
                     },
                 },
             ])
-            .sort({ createdAt: 1 });
+            .sort({ createdAt: -1 });
 
         return res.status(200).json({ success: true, source: "getPosts", posts });
     } catch (error) {
@@ -140,7 +140,7 @@ export const getUserPosts = async (req, res) => {
                     select: "-__v",
                 },
             ])
-            .sort({ createdAt: -1 });
+            .sort({ createdAt: 1 });
 
         if (!userPosts) {
             return res.status(404).json({ success: false, source: "getUserPosts", message: "User not found" });
