@@ -20,7 +20,7 @@ export const createPost = async (req, res) => {
 
         const newPost = await Post.create({
             description,
-            image: imageUrl.url,
+            image: imageUrl.secure_url,
             userId: req.user.id,
         });
 
