@@ -40,6 +40,7 @@ export const loginUser = async (req, res) => {
             maxAge: 900000,
             sameSite: "None",
             secure: true,
+            httpOnly: false,
         });
 
         await User.findByIdAndUpdate(id, { isOnline: true }, { new: true });
