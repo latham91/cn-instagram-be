@@ -36,7 +36,14 @@ export const loginUser = async (req, res) => {
             expiresIn: process.env.JWT_EXPIRE,
         });
 
-        res.cookie("insta_auth", token, { maxAge: 900000 });
+        res.cookie("insta_auth", token, {
+            maxAge: 900000,
+            domain: "cn-instagram-be.onrender.com",
+            httpOnly: true,
+            secure: true,
+            sameSite: "None",
+        });
+
         await User.findByIdAndUpdate(id, { isOnline: true }, { new: true });
 
         return res.status(200).json({ success: true, message: `${username} logged in`, user: req.user, token });
