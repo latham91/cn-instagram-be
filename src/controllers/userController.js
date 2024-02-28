@@ -52,6 +52,7 @@ export const verifyUser = async (req, res) => {
         return res.status(200).json({ success: true, user: req.user });
     } catch (error) {
         await User.findByIdAndUpdate(req.user.id, { isOnline: false }, { new: true });
+        await res.clearCookie("insta_auth");
         return res
             .status(500)
             .json({ success: false, message: "Server error", source: "verifyUser", error: error.message });
