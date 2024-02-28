@@ -97,3 +97,15 @@ export const getOnlineUsers = async (req, res) => {
             .json({ success: false, message: "Server error", source: "getOnlineUsers", error: error.message });
     }
 };
+
+export const setOffline = async (req, res) => {
+    try {
+        await User.findByIdAndUpdate(req.user.id, { isOnline: false }, { new: true });
+
+        return res.status(200).json({ success: true, message: "User set offline" });
+    } catch (error) {
+        return res
+            .status(500)
+            .json({ success: false, message: "Server error", source: "setOffline", error: error.message });
+    }
+};

@@ -6,20 +6,22 @@ const verifyJwt = async (req, res, next) => {
         const token = req.cookies.insta_auth;
 
         if (!token) {
+            if (req.user && req.user.id) {
+                await User.findOneAndUpdate({ _id: req.user.id }, { $set: { isOnline: false } });
+            }
             return res.status(401).json({ success: false, source: "verifyJwt", message: "Unauthorized" });
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        if (!decoded) {
-            await User.findOneAndUpdate({ _id: decoded.id }, { $set: { online: false } });
-            return res.status(401).json({ success: false, source: "verifyJwt", message: "Unauthorized" });
-        }
-
         req.user = decoded;
 
         next();
     } catch (error) {
+        if (req.user && req.user.id) {
+            await User.findOneAndUpdate({ _id: req.user.id }, { $set: { isOnline: false } });
+        }
+
         return res.status(401).json({ success: false, message: "Not authorized to access this route" });
     }
 };
