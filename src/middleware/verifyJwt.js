@@ -14,7 +14,7 @@ const verifyJwt = async (req, res, next) => {
 
         next();
     } catch (error) {
-        res.clearCookie("insta_auth");
+        await res.clearCookie("insta_auth");
         return res.status(401).json({ success: false, message: "Not authorized to access this route" });
     }
 };
