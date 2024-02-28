@@ -38,7 +38,7 @@ export const loginUser = async (req, res) => {
 
         res.cookie("insta_auth", token, {
             maxAge: 900000,
-            httpOnly: true,
+            sameSite: "None",
             secure: true,
         });
 
@@ -58,8 +58,8 @@ export const verifyUser = async (req, res) => {
     } catch (error) {
         await User.findByIdAndUpdate(req.user.id, { isOnline: false }, { new: true });
         await res.clearCookie("insta_auth", {
-            httpOnly: true,
             secure: true,
+            sameSite: "None",
         });
         return res
             .status(500)
