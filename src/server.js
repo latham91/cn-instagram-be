@@ -23,7 +23,7 @@ app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
 app.use(
     cors({
-        origin: ["https://gramster.netlify.app"],
+        origin: ["https://gramster.netlify.app", "https://cn-instagram-be.onrender.com"],
         credentials: true,
     })
 );
