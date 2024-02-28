@@ -79,6 +79,8 @@ export const logoutUser = async (req, res) => {
             sameSite: "None",
         });
 
+        await User.findByIdAndUpdate(req.user.id, { isOnline: false }, { new: true });
+
         return res.status(200).json({ success: true, message: "User logged out" });
     } catch (error) {
         return res
