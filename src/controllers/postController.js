@@ -63,10 +63,6 @@ export const getPosts = async (req, res) => {
             ])
             .sort({ createdAt: -1 });
 
-        if (posts.length === 0) {
-            return res.status(404).json({ success: false, source: "getPosts", message: "No posts found" });
-        }
-
         return res.status(200).json({ success: true, source: "getPosts", posts });
     } catch (error) {
         return res.status(500).json({ success: false, source: "getPosts", message: "Internal server error" });
