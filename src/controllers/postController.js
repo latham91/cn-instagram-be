@@ -121,24 +121,26 @@ export const getUserPosts = async (req, res) => {
     try {
         const { username } = req.params;
 
-        const userPosts = await User.findOne({ username }).populate([
-            {
-                path: "posts",
-                select: "-__v",
-                populate: {
-                    path: "userId",
-                    select: "username createdAt",
+        const userPosts = await User.findOne({ username })
+            .populate([
+                {
+                    path: "posts",
+                    select: "-__v",
+                    populate: {
+                        path: "userId",
+                        select: "username createdAt",
+                    },
                 },
-            },
-            {
-                path: "likes",
-                select: "-__v",
-            },
-            {
-                path: "comments",
-                select: "-__v",
-            },
-        ]);
+                {
+                    path: "likes",
+                    select: "-__v",
+                },
+                {
+                    path: "comments",
+                    select: "-__v",
+                },
+            ])
+            .sort({ createdAt: -1 });
 
         if (!userPosts) {
             return res.status(404).json({ success: false, source: "getUserPosts", message: "User not found" });
