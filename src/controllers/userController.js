@@ -73,9 +73,6 @@ export const verifyUser = async (req, res) => {
 
 export const logoutUser = async (req, res) => {
     try {
-        const { id } = req.user;
-        await User.findByIdAndUpdate(id, { isOnline: false }, { new: true });
-
         res.clearCookie("insta_auth", {
             secure: true,
             sameSite: "None",
