@@ -38,10 +38,6 @@ export const loginUser = async (req, res) => {
 
         res.cookie("insta_auth", token, {
             maxAge: 900000,
-            domain: "gramster.netlify.app",
-            httpOnly: true,
-            secure: true,
-            sameSite: "None",
         });
 
         await User.findByIdAndUpdate(id, { isOnline: true }, { new: true });
