@@ -38,7 +38,7 @@ export const loginUser = async (req, res) => {
 
         res.cookie("insta_auth", token, {
             maxAge: 900000,
-            domain: "cn-instagram-be.onrender.com",
+            domain: "gramster.netlify.app",
             httpOnly: true,
             secure: true,
             sameSite: "None",
