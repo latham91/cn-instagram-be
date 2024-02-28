@@ -17,6 +17,6 @@ router.post("/login", comparePassword, loginUser);
 router.post("/verify", verifyJwt, verifyUser);
 router.get("/online", verifyJwt, getOnlineUsers);
 router.post("/logout", verifyJwt, logoutUser);
-router.post("/setoffline", verifyJwt, setOffline);
+router.post("/setoffline", setOffline);
 
 export default router;
