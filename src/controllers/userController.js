@@ -104,6 +104,7 @@ export const getOnlineUsers = async (req, res) => {
 export const setOffline = async (req, res) => {
     try {
         await User.findByIdAndUpdate(req.user.id, { isOnline: false }, { new: true });
+        console.log(req.user.id, " - set offline");
 
         return res.status(200).json({ success: true, message: "User set offline" });
     } catch (error) {
