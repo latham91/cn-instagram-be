@@ -21,6 +21,10 @@ const userSchema = new mongoose.Schema(
             required: true,
             minlength: 6,
         },
+        isOnline: {
+            type: Boolean,
+            default: false,
+        },
         posts: [
             {
                 type: mongoose.Schema.Types.ObjectId,

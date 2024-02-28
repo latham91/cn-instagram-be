@@ -37,6 +37,7 @@ export const loginUser = async (req, res) => {
         });
 
         res.cookie("insta_auth", token, { httpOnly: true, maxAge: 900000 });
+        await User.findByIdAndUpdate(id, { isOnline: true }, { new: true });
 
         return res.status(200).json({ success: true, message: `${username} logged in`, user: req.user, token });
     } catch (error) {
@@ -50,8 +51,36 @@ export const verifyUser = async (req, res) => {
     try {
         return res.status(200).json({ success: true, user: req.user });
     } catch (error) {
+        await User.findByIdAndUpdate(req.user.id, { isOnline: false }, { new: true });
         return res
             .status(500)
             .json({ success: false, message: "Server error", source: "verifyUser", error: error.message });
+    }
+};
+
+export const logoutUser = async (req, res) => {
+    try {
+        const { id } = req.user;
+        await User.findByIdAndUpdate(id, { isOnline: false }, { new: true });
+
+        res.clearCookie("insta_auth");
+
+        return res.status(200).json({ success: true, message: "User logged out" });
+    } catch (error) {
+        return res
+            .status(500)
+            .json({ success: false, message: "Server error", source: "logoutUser", error: error.message });
+    }
+};
+
+export const getOnlineUsers = async (req, res) => {
+    try {
+        const users = await User.find({ isOnline: true }, ["username", "isOnline"]);
+
+        return res.status(200).json({ success: true, source: "getOnlineUsers", message: "Online users", users });
+    } catch (error) {
+        return res
+            .status(500)
+            .json({ success: false, message: "Server error", source: "getOnlineUsers", error: error.message });
     }
 };

@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
+import User from "../models/userModel.js";
 
-const verifyJwt = (req, res, next) => {
+const verifyJwt = async (req, res, next) => {
     const token = req.cookies.insta_auth;
 
     if (!token) {
