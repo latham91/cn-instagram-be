@@ -19,8 +19,8 @@ dotenv.config();
 
 // Express instance and required parsers
 const app = express();
-app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
+app.use(express.json({ limit: "10mb" }));
 app.use(
     cors({
         origin: ["https://gramster.netlify.app", "https://cn-instagram-be.onrender.com"],
