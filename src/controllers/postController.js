@@ -61,7 +61,7 @@ export const getPosts = async (req, res) => {
                     },
                 },
             ])
-            .sort({ createdAt: -1 });
+            .sort({ createdAt: 1 });
 
         return res.status(200).json({ success: true, source: "getPosts", posts });
     } catch (error) {
