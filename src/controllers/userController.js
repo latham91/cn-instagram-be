@@ -45,7 +45,7 @@ export const loginUser = async (req, res) => {
 
         await User.findByIdAndUpdate(id, { isOnline: true }, { new: true });
 
-        return res.status(200).json({ success: true, message: `${username} logged in`, user: req.user, token });
+        return;
     } catch (error) {
         return res
             .status(500)
@@ -58,10 +58,12 @@ export const verifyUser = async (req, res) => {
         return res.status(200).json({ success: true, user: req.user });
     } catch (error) {
         await User.findByIdAndUpdate(req.user.id, { isOnline: false }, { new: true });
+
         await res.clearCookie("insta_auth", {
             secure: true,
             sameSite: "None",
         });
+
         return res
             .status(500)
             .json({ success: false, message: "Server error", source: "verifyUser", error: error.message });
@@ -74,8 +76,8 @@ export const logoutUser = async (req, res) => {
         await User.findByIdAndUpdate(id, { isOnline: false }, { new: true });
 
         res.clearCookie("insta_auth", {
-            httpOnly: true,
             secure: true,
+            sameSite: "None",
         });
 
         return res.status(200).json({ success: true, message: "User logged out" });
