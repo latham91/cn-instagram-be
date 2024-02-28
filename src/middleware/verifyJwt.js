@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+const User = require("../models/User");
 
 const verifyJwt = async (req, res, next) => {
     try {
@@ -9,6 +10,12 @@ const verifyJwt = async (req, res, next) => {
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        if (!decoded) {
+            await User.findOneAndUpdate({ _id: decoded.id }, { $set: { online: false } });
+            return res.status(401).json({ success: false, source: "verifyJwt", message: "Unauthorized" });
+        }
+
         req.user = decoded;
 
         next();
