@@ -9,6 +9,7 @@ const verifyJwt = async (req, res, next) => {
             if (req.user && req.user.id) {
                 await User.findOneAndUpdate({ _id: req.user.id }, { $set: { isOnline: false } });
             }
+
             return res.status(401).json({ success: false, source: "verifyJwt", message: "Unauthorized" });
         }
 
