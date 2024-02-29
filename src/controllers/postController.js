@@ -43,24 +43,18 @@ export const createPost = async (req, res) => {
 export const getPosts = async (req, res) => {
     try {
         const posts = await Post.find()
-            .populate([
-                {
+            .populate({
+                path: "userId",
+                select: "-password -__v -comments -likes -posts",
+            })
+            .populate({
+                path: "comments",
+                select: "-__v",
+                populate: {
                     path: "userId",
-                    select: "-password -__v -comments -likes -posts",
+                    select: "username",
                 },
-                {
-                    path: "likes",
-                    select: "-__v",
-                },
-                {
-                    path: "comments",
-                    select: "-__v",
-                    populate: {
-                        path: "userId",
-                        select: "username",
-                    },
-                },
-            ])
+            })
             .sort({ createdAt: -1 });
 
         return res.status(200).json({ success: true, source: "getPosts", posts });
@@ -121,38 +115,41 @@ export const getUserPosts = async (req, res) => {
     try {
         const { username } = req.params;
 
-        const user = await User.findOne({ username }); // Assuming you have the username of the user whose posts you want to find
+        const user = await User.findOne({ username });
         if (!user) {
             return res.status(404).json({ success: false, source: "getUserPosts", message: "User not found" });
         }
 
-        const userPosts = await Post.find({ userId: user._id }) // Find posts belonging to the user
-            .populate([
-                {
+        const userPosts = await Post.find({ userId: user._id })
+            .populate({
+                path: "userId",
+                select: "-password -__v -comments -likes -posts",
+            })
+            .populate({
+                path: "comments",
+                select: "-__v",
+                populate: {
                     path: "userId",
-                    select: "createdAt username _id",
+                    select: "username",
                 },
-                {
-                    path: "likes",
-                    select: "_id",
+            })
+            .populate({
+                path: "likes",
+                select: "-__v -password -comments -likes -posts",
+                populate: {
+                    path: "userId",
+                    select: "username",
                 },
-                {
-                    path: "comments",
-                    select: "-__v -updatedAt",
-                    populate: {
-                        path: "userId",
-                        select: "username",
-                    },
-                },
-            ])
+            })
             .sort({ createdAt: -1 });
 
-        if (!userPosts) {
+        if (userPosts.length === 0) {
             return res.status(404).json({ success: false, source: "getUserPosts", message: "No posts found" });
         }
 
         return res.status(200).json({ success: true, source: "getUserPosts", userPosts });
     } catch (error) {
+        console.error("Error fetching user posts:", error);
         return res.status(500).json({ success: false, source: "getUserPosts", message: "Internal server error" });
     }
 };

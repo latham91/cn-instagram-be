@@ -10,7 +10,7 @@ const verifyJwt = async (req, res, next) => {
                 await User.findOneAndUpdate({ _id: req.user.id }, { $set: { isOnline: false } });
             }
 
-            return res.status(401).json({ success: false, source: "verifyJwt", message: "Unauthorized" });
+            return res.status(401).json({ success: false, source: "verifyJwt no token", message: "Unauthorized" });
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
