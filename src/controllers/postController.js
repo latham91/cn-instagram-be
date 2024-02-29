@@ -121,29 +121,34 @@ export const getUserPosts = async (req, res) => {
     try {
         const { username } = req.params;
 
-        const userPosts = await User.findOne({ username })
+        const user = await User.findOne({ username }); // Assuming you have the username of the user whose posts you want to find
+        if (!user) {
+            return res.status(404).json({ success: false, source: "getUserPosts", message: "User not found" });
+        }
+
+        const userPosts = await Post.find({ userId: user._id }) // Find posts belonging to the user
             .populate([
                 {
-                    path: "posts",
-                    select: "-__v",
-                    populate: {
-                        path: "userId",
-                        select: "username createdAt",
-                    },
+                    path: "userId",
+                    select: "createdAt username _id",
                 },
                 {
                     path: "likes",
-                    select: "-__v",
+                    select: "_id",
                 },
                 {
                     path: "comments",
-                    select: "-__v",
+                    select: "-__v -updatedAt",
+                    populate: {
+                        path: "userId",
+                        select: "username",
+                    },
                 },
             ])
-            .sort({ createdAt: 1 });
+            .sort({ createdAt: -1 });
 
         if (!userPosts) {
-            return res.status(404).json({ success: false, source: "getUserPosts", message: "User not found" });
+            return res.status(404).json({ success: false, source: "getUserPosts", message: "No posts found" });
         }
 
         return res.status(200).json({ success: true, source: "getUserPosts", userPosts });
